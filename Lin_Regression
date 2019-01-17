@@ -1,0 +1,26 @@
+#Linear Regression-call data and libs
+library(data.table)     
+install.packages("Hmisc")
+library(Hmisc)
+library(ggplot2)
+dt<-fread("AvL.csv")
+names(dt) <- c("op", "x", "y")
+dt2<-dt[, c(2,3)]
+#Plot if required
+p <- ggplot(data = dt, aes(x=dt$A_factor_bpd, y=dt$Feb.limit_bpd)) +
+  geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x) + 
+  geom_point()
+p
+ggplot(data=dt2,aes(x,y))+stat_summary(fun.data = =mean_cl_normal) + 
+  geom_smooth(method='lm')
+ggplot(data=dt2,aes(x,y))+stat_summary(fun.data = =mean_cl_normal) + 
+  geom_smooth(method='lm',formula=y~x)
+# Create multiple linear model
+lm_fit <- lm(y ~ x, data=dt2)
+summary(lm_fit)
+# Save predictions in new data frame with variable you want to plot against
+predicted_dt2 <- data.frame(y_pred = predict(lm_fit, dt2), x=dt2$x)
+# Predicted line of multiple linear regression if required
+ggplot(data = dt2, aes(x, y)) + 
+  geom_point(color='blue') +
+  geom_line(color='red',data = predicted_dt2, aes(y=y_pred, x))
